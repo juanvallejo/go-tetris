@@ -14,6 +14,8 @@ const (
 	CrossShape
 )
 
+var ShapeColor = colornames.Darkturquoise
+
 type Shape struct {
 	color color.Color
 	start pixel.Vec
@@ -69,7 +71,7 @@ func NewShape(origin pixel.Vec, shapeKind int, width, height, mar float64) *Shap
 	size := pixel.V(width-margin.X*2, -height+margin.Y*2)
 
 	return &Shape{
-		color: colornames.Darkturquoise,
+		color: ShapeColor,
 		start: start,
 		end:   start.Add(size),
 		kind:  shapeKind,
