@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/faiface/pixel/pixelgl"
 
-	"github.com/juanvallejo/tetris/pkg/tetris"
+	"github.com/juanvallejo/tictactoe/pkg/tictactoe"
 )
 
 func main() {
-	pixelgl.Run(tetris.NewGame)
+	pixelgl.Run(tictactoe.NewGame)
 }

@@ -1,7 +1,7 @@
-go-tetris
+go-tictactoe
 =========
 
-Simple tetris game written in Go, using an opengl-based graphics library.
+Simple tic-tac-toe game written in Go, using an opengl-based graphics library.
 
 ## Building
 
@@ -25,11 +25,11 @@ make
 Alternatively, build with:
 
 ```
-mkdir -p ./bin && go build -o bin/tetris ./cmd/main.go
+mkdir -p ./bin && go build -o bin/tictactoe ./cmd/main.go
 ```
 
 ### Running
 
 ```
-./bin/tetris
+./bin/tictactoe
 ```

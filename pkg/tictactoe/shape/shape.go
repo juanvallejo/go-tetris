@@ -14,7 +14,7 @@ const (
 	CrossShape
 )
 
-var ShapeColor = colornames.Darkturquoise
+var ShapeColor = colornames.Thistle
 
 type Shape struct {
 	color color.Color

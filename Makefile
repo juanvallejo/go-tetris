@@ -1,2 +1,2 @@
 all:
-	mkdir -p bin && go build -o bin/tetris cmd/main.go
+	mkdir -p bin && go build -o bin/tictactoe cmd/main.go

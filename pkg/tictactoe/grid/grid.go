@@ -9,8 +9,9 @@ import (
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
+	"github.com/faiface/pixel/text"
 
-	"github.com/juanvallejo/tetris/pkg/tetris/shape"
+	"github.com/juanvallejo/tictactoe/pkg/tictactoe/shape"
 )
 
 const (
@@ -70,6 +71,64 @@ func (g Grid) AtVector(v pixel.Vec) *Cell {
 	return nil
 }
 
+func (g Grid) CheckWin(context *imdraw.IMDraw, textContext *text.Text) bool {
+	if len(g) != MaxCells*MaxCells {
+		panic(fmt.Sprintf("malformed grid: expected to check wins on a %d by %d grid, but total grid size was %d", MaxCells, MaxCells, len(g)))
+	}
+
+	// check vertical wins
+	for i := 0; i < MaxCells; i++ {
+		if checkVerticalCount(g[i], g[i].value) >= MaxCells {
+			return drawVerticalWin(context, g[i]) && drawText(textContext, getWinText(g[i]))
+		}
+	}
+
+	// check hortizontal wins
+	for i := range g {
+		if i%MaxCells != 0 {
+			continue
+		}
+		if checkHorizontalCount(g[i], g[i].value) >= MaxCells {
+			return drawHorizontalWin(context, g[i]) && drawText(textContext, getWinText(g[i]))
+		}
+	}
+
+	// check diagonal wins
+	if checkDiagonalCount(g[0], g[0].value, true) >= MaxCells {
+		return drawDiagonalWin(context, g[0], true) && drawText(textContext, getWinText(g[0]))
+	}
+	if checkDiagonalCount(g[MaxCells-1], g[MaxCells-1].value, false) >= MaxCells {
+		return drawDiagonalWin(context, g[MaxCells-1], false) && drawText(textContext, getWinText(g[MaxCells-1]))
+	}
+
+	// check draw
+	for i := range g {
+		if g[i].value == nil {
+			return false
+		}
+	}
+
+	return drawText(textContext, "TIE!")
+}
+
+func drawText(context *text.Text, contents string) bool {
+	context.Dot.X -= context.BoundsOf(contents).W() / 2
+	context.Dot.Y -= context.BoundsOf(contents).H() / 2
+	fmt.Fprintf(context, "%s\n", contents)
+	return true
+}
+
+// getWinText returns the string of text presented on a win
+// depending on the value of cell.
+func getWinText(cell *Cell) string {
+	playerWin := 1
+	if cell.value != nil && cell.value.Kind() == shape.CircleShape {
+		playerWin = 2
+	}
+
+	return fmt.Sprintf("PLAYER %d WINS!", playerWin)
+}
+
 func drawHorizontalWin(context *imdraw.IMDraw, from *Cell) bool {
 	context.Color = shape.ShapeColor
 	context.Push(pixel.V(from.start.X-gridLineWidth, from.start.Y-((from.start.Y-from.end.Y)/2)))
@@ -115,46 +174,6 @@ func drawDiagonalWin(context *imdraw.IMDraw, from *Cell, bottomRight bool) bool 
 	}
 
 	return drawDiagonalWin(context, from.bottomLeft, bottomRight)
-}
-
-func (g Grid) CheckWin(context *imdraw.IMDraw) bool {
-	if len(g) != MaxCells*MaxCells {
-		panic(fmt.Sprintf("malformed grid: expected to check wins on a %d by %d grid, but total grid size was %d", MaxCells, MaxCells, len(g)))
-	}
-
-	// check vertical wins
-	for i := 0; i < MaxCells; i++ {
-		if checkVerticalCount(g[i], g[i].value) >= MaxCells {
-			return drawVerticalWin(context, g[i])
-		}
-	}
-
-	// check hortizontal wins
-	for i := range g {
-		if i%MaxCells != 0 {
-			continue
-		}
-		if checkHorizontalCount(g[i], g[i].value) >= MaxCells {
-			return drawHorizontalWin(context, g[i])
-		}
-	}
-
-	// check diagonal wins
-	if checkDiagonalCount(g[0], g[0].value, true) >= MaxCells {
-		return drawDiagonalWin(context, g[0], true)
-	}
-	if checkDiagonalCount(g[MaxCells-1], g[MaxCells-1].value, false) >= MaxCells {
-		return drawDiagonalWin(context, g[MaxCells-1], false)
-	}
-
-	// check draw
-	for i := range g {
-		if g[i].value == nil {
-			return false
-		}
-	}
-
-	return true
 }
 
 func checkDiagonalCount(cell *Cell, target *shape.Shape, bottomRight bool) int {
