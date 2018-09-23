@@ -11,6 +11,7 @@ import (
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/text"
 
+	"github.com/juanvallejo/tictactoe/pkg/tictactoe/score"
 	"github.com/juanvallejo/tictactoe/pkg/tictactoe/shape"
 )
 
@@ -71,7 +72,7 @@ func (g Grid) AtVector(v pixel.Vec) *Cell {
 	return nil
 }
 
-func (g Grid) CheckWin(context *imdraw.IMDraw, textContext *text.Text) bool {
+func (g Grid) CheckWin(context *imdraw.IMDraw, textContext *text.Text, scoreKeeper score.ScoreKeeper) bool {
 	if len(g) != MaxCells*MaxCells {
 		panic(fmt.Sprintf("malformed grid: expected to check wins on a %d by %d grid, but total grid size was %d", MaxCells, MaxCells, len(g)))
 	}
@@ -79,7 +80,7 @@ func (g Grid) CheckWin(context *imdraw.IMDraw, textContext *text.Text) bool {
 	// check vertical wins
 	for i := 0; i < MaxCells; i++ {
 		if checkVerticalCount(g[i], g[i].value) >= MaxCells {
-			return drawVerticalWin(context, g[i]) && drawText(textContext, getWinText(g[i]))
+			return drawVerticalWin(context, g[i]) && drawText(textContext, getWinText(g[i])) && setWinScore(g[i], scoreKeeper)
 		}
 	}
 
@@ -89,16 +90,16 @@ func (g Grid) CheckWin(context *imdraw.IMDraw, textContext *text.Text) bool {
 			continue
 		}
 		if checkHorizontalCount(g[i], g[i].value) >= MaxCells {
-			return drawHorizontalWin(context, g[i]) && drawText(textContext, getWinText(g[i]))
+			return drawHorizontalWin(context, g[i]) && drawText(textContext, getWinText(g[i])) && setWinScore(g[i], scoreKeeper)
 		}
 	}
 
 	// check diagonal wins
 	if checkDiagonalCount(g[0], g[0].value, true) >= MaxCells {
-		return drawDiagonalWin(context, g[0], true) && drawText(textContext, getWinText(g[0]))
+		return drawDiagonalWin(context, g[0], true) && drawText(textContext, getWinText(g[0])) && setWinScore(g[0], scoreKeeper)
 	}
 	if checkDiagonalCount(g[MaxCells-1], g[MaxCells-1].value, false) >= MaxCells {
-		return drawDiagonalWin(context, g[MaxCells-1], false) && drawText(textContext, getWinText(g[MaxCells-1]))
+		return drawDiagonalWin(context, g[MaxCells-1], false) && drawText(textContext, getWinText(g[MaxCells-1])) && setWinScore(g[MaxCells-1], scoreKeeper)
 	}
 
 	// check draw
@@ -115,6 +116,15 @@ func drawText(context *text.Text, contents string) bool {
 	context.Dot.X -= context.BoundsOf(contents).W() / 2
 	context.Dot.Y -= context.BoundsOf(contents).H() / 2
 	fmt.Fprintf(context, "%s\n", contents)
+	return true
+}
+
+func setWinScore(cell *Cell, scoreKeeper score.ScoreKeeper) bool {
+	if cell.value == nil {
+		return true
+	}
+
+	scoreKeeper.Add(cell.value.String(), 1)
 	return true
 }
 

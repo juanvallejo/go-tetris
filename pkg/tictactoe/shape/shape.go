@@ -9,23 +9,28 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-const (
-	CircleShape = iota
-	CrossShape
-)
+type ShapeKind string
 
-var ShapeColor = colornames.Thistle
+var (
+	ShapeColor            = colornames.Thistle
+	CircleShape ShapeKind = "O"
+	CrossShape  ShapeKind = "X"
+)
 
 type Shape struct {
 	color color.Color
 	start pixel.Vec
 	end   pixel.Vec
-	kind  int
+	kind  ShapeKind
 	width float64
 }
 
-func (s *Shape) Kind() int {
+func (s *Shape) Kind() ShapeKind {
 	return s.kind
+}
+
+func (s *Shape) String() string {
+	return string(s.kind)
 }
 
 func (s *Shape) Render(context *imdraw.IMDraw) {
@@ -65,7 +70,7 @@ func (s *Shape) Render(context *imdraw.IMDraw) {
 	context.Circle((s.end.Y-s.start.Y)/2, s.width)
 }
 
-func NewShape(origin pixel.Vec, shapeKind int, width, height, mar float64) *Shape {
+func NewShape(origin pixel.Vec, shapeKind ShapeKind, width, height, mar float64) *Shape {
 	margin := pixel.V(mar, mar)
 	start := origin.Add(pixel.V(margin.X, -margin.Y))
 	size := pixel.V(width-margin.X*2, -height+margin.Y*2)
@@ -80,10 +85,10 @@ func NewShape(origin pixel.Vec, shapeKind int, width, height, mar float64) *Shap
 }
 
 type ShapeDecider struct {
-	next int
+	next ShapeKind
 }
 
-func (n *ShapeDecider) Next() int {
+func (n *ShapeDecider) Next() ShapeKind {
 	next := n.next
 	if n.next == CrossShape {
 		n.next = CircleShape
@@ -94,7 +99,7 @@ func (n *ShapeDecider) Next() int {
 	return next
 }
 
-func NewShapeDecider(startingShape int) *ShapeDecider {
+func NewShapeDecider(startingShape ShapeKind) *ShapeDecider {
 	if startingShape != CrossShape && startingShape != CircleShape {
 		panic(fmt.Sprintf("invalid shape-decider shape: %v", startingShape))
 	}
