@@ -6,7 +6,7 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 
-	"github.com/juanvallejo/tictactoe/pkg/tictactoe/shape"
+	"github.com/juanvallejo/go-tictactoe/pkg/tictactoe/shape"
 )
 
 type Cell struct {

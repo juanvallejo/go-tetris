@@ -11,8 +11,8 @@ import (
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/text"
 
-	"github.com/juanvallejo/tictactoe/pkg/tictactoe/score"
-	"github.com/juanvallejo/tictactoe/pkg/tictactoe/shape"
+	"github.com/juanvallejo/go-tictactoe/pkg/tictactoe/score"
+	"github.com/juanvallejo/go-tictactoe/pkg/tictactoe/shape"
 )
 
 const (

@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/faiface/pixel/pixelgl"
 
-	"github.com/juanvallejo/tictactoe/pkg/tictactoe"
+	"github.com/juanvallejo/go-tictactoe/pkg/tictactoe"
 )
 
 func main() {
